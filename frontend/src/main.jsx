@@ -189,11 +189,13 @@ function App() {
 <h2 style={{ marginTop: 30 }}>📊 Продажи</h2>
 
 <ul>
-  {sales.map(s => (
-    <li key={s.id}>
-      {new Date(s.createdAt).toLocaleString()} — {s.total} грн
-    </li>
-  ))}
+  {sales.map((s) => {
+    return (
+      <li key={s.id}>
+        {new Date(s.createdAt).toLocaleString()} — {s.total} грн
+      </li>
+    );
+  })}
 </ul>
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
