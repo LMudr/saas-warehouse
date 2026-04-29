@@ -26,6 +26,21 @@ function App() {
 
     await res.json();
     loadTenants();
+    const loadProducts = async () => {
+  const res = await fetch(API + "/products");
+  const data = await res.json();
+  setProducts(data);
+};
+
+const createProduct = async () => {
+  await fetch(API + "/products", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: "Товар", price: 100 })
+  });
+
+  loadProducts();
+};
   };
 
   return (
