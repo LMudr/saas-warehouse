@@ -14,8 +14,9 @@ function App() {
   };
 
   useEffect(() => {
-    loadTenants();
-  }, []);
+  loadTenants();
+  loadProducts();
+}, []);
 
   const createTenant = async () => {
     const res = await fetch(API + "/admin/tenants", {
@@ -63,6 +64,20 @@ const createProduct = async () => {
       </button>
 
       <h2 style={{ marginTop: 30 }}>Компании:</h2>
+
+      <h2 style={{ marginTop: 30 }}>Товары:</h2>
+
+<button onClick={createProduct}>
+  Добавить товар
+</button>
+
+<ul>
+  {products.map(p => (
+    <li key={p.id}>
+      {p.name} — {p.price}
+    </li>
+  ))}
+</ul>
 
       <ul>
         {tenants.map(t => (
