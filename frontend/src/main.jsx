@@ -56,63 +56,68 @@ function App() {
   }, []);
 
   return (
-    <div style={{ padding: 20, fontFamily: "Arial" }}>
-      <h1>SaaS Склад 🚀</h1>
+  <div style={{ padding: 20, fontFamily: "Arial" }}>
+    <h1>SaaS Склад 🚀</h1>
 
-      <button
-        onClick={createTenant}
-        style={{
-          padding: 12,
-          background: "green",
-          color: "white",
-          border: "none",
-          borderRadius: 8,
-          marginTop: 20,
-          cursor: "pointer"
-        }}
-      >
-        Создать компанию
+    <button onClick={createTenant} style={{ padding: 12, background: "green", color: "white", borderRadius: 8 }}>
+      Создать компанию
+    </button>
+
+    <h2 style={{ marginTop: 30 }}>Компании:</h2>
+    <ul>
+      {tenants.map(t => (
+        <li key={t.id}>{t.name}</li>
+      ))}
+    </ul>
+
+    <h2 style={{ marginTop: 30 }}>Товары:</h2>
+
+    <div style={{ marginBottom: 10 }}>
+      <input
+        placeholder="Название"
+        value={productName}
+        onChange={e => setProductName(e.target.value)}
+      />
+
+      <input
+        placeholder="Цена"
+        value={productPrice}
+        onChange={e => setProductPrice(e.target.value)}
+        style={{ marginLeft: 10 }}
+      />
+
+      <button onClick={createProduct} style={{ marginLeft: 10 }}>
+        Добавить
       </button>
-
-      <h2 style={{ marginTop: 30 }}>Компании:</h2>
-      <ul>
-        {tenants.map(t => (
-          <li key={t.id}>
-            {t.name} ({t.id})
-          </li>
-        ))}
-      </ul>
-
-      <h2 style={{ marginTop: 30 }}>Товары:</h2>
-
-      <div style={{ marginBottom: 10 }}>
-        <input
-          placeholder="Название товара"
-          value={productName}
-          onChange={e => setProductName(e.target.value)}
-        />
-
-        <input
-          placeholder="Цена"
-          value={productPrice}
-          onChange={e => setProductPrice(e.target.value)}
-          style={{ marginLeft: 10 }}
-        />
-
-        <button onClick={createProduct} style={{ marginLeft: 10 }}>
-          Добавить
-        </button>
-      </div>
-
-      <ul>
-        {products.map(p => (
-          <li key={p.id}>
-            {p.name} — {p.price}
-          </li>
-        ))}
-      </ul>
     </div>
-  );
+
+    <ul>
+      {products.map(p => (
+        <li key={p.id}>
+          {p.name} — {p.price}
+          <button
+            style={{ marginLeft: 10 }}
+            onClick={() => addToCart(p)}
+          >
+            +
+          </button>
+        </li>
+      ))}
+    </ul>
+
+    <h2 style={{ marginTop: 30 }}>🧾 Чек:</h2>
+
+    <ul>
+      {cart.map((item, i) => (
+        <li key={i}>
+          {item.name} — {item.price}
+        </li>
+      ))}
+    </ul>
+
+    <h3>Итого: {total} грн</h3>
+  </div>
+);
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
