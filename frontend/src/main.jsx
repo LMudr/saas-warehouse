@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-const API = "https://saas-warehouse-production.up.railway.app";
+const API = "https://saas-backend-fr9j.onrender.com";
 
 function App(){
   return (
