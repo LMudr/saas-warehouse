@@ -3,6 +3,7 @@ import express from "express";
 import crypto from "crypto";
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 let tenants = [];
