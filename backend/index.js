@@ -1,3 +1,4 @@
+let sales = [];
 import cors from "cors";
 import express from "express";
 import crypto from "crypto";
@@ -29,6 +30,22 @@ app.post("/products",(req,res)=>{
 
 app.get("/products",(req,res)=>{
   res.json(products);
+});
+
+app.post("/sales", (req, res) => {
+  const sale = {
+    id: crypto.randomUUID(),
+    items: req.body.items || [],
+    total: req.body.total || 0,
+    createdAt: new Date()
+  };
+
+  sales.push(sale);
+  res.json(sale);
+});
+
+app.get("/sales", (req, res) => {
+  res.json(sales);
 });
 
 app.listen(3000, ()=>console.log("backend running"));
