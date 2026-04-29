@@ -26,6 +26,13 @@ function App() {
   const addToCart = (product) => {
   setCart(prev => [...prev, product]);
 };
+  const removeFromCart = (index) => {
+  setCart(prev => prev.filter((_, i) => i !== index));
+};
+
+const clearCart = () => {
+  setCart([]);
+};
 
 const total = cart.reduce((sum, item) => sum + item.price, 0);
   
@@ -115,12 +122,22 @@ const total = cart.reduce((sum, item) => sum + item.price, 0);
     <h2 style={{ marginTop: 30 }}>🧾 Чек:</h2>
 
     <ul>
-      {cart.map((item, i) => (
-        <li key={i}>
-          {item.name} — {item.price}
-        </li>
-      ))}
-    </ul>
+  {cart.map((item, i) => (
+    <li key={i}>
+      {item.name} — {item.price}
+      <button
+        style={{ marginLeft: 10 }}
+        onClick={() => removeFromCart(i)}
+      >
+        ❌
+      </button>
+    </li>
+  ))}
+</ul>
+
+<button onClick={clearCart} style={{ marginTop: 10 }}>
+  Очистить чек
+</button>
 
     <h3>Итого: {total} грн</h3>
   </div>
