@@ -5,6 +5,7 @@ const API = "https://saas-backend-fr9j.onrender.com";
 
 function App() {
   // --- STATE ---
+  const [sales, setSales] = useState([]);
   const [tenants, setTenants] = useState([]);
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
@@ -18,15 +19,38 @@ function App() {
     setTenants(await res.json());
   };
 
+  const loadSales = async () => {
+  const res = await fetch(API + "/sales");
+  const data = await res.json();
+  setSales(data);
+};
+
   const loadProducts = async () => {
     const res = await fetch(API + "/products");
     setProducts(await res.json());
   };
 
+  const checkout = async () => {
+  if (cart.length === 0) return;
+
+  await fetch(API + "/sales", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      items: cart,
+      total: total
+    })
+  });
+
+  clearCart();
+  loadSales();
+};
+
   useEffect(() => {
-    loadTenants();
-    loadProducts();
-  }, []);
+  loadTenants();
+  loadProducts();
+  loadSales();
+}, []);
 
   // --- TENANTS ---
   const createTenant = async () => {
@@ -152,11 +176,24 @@ function App() {
 
       <h3>Итого: {total} грн</h3>
 
+      <button onClick={checkout} style={{ marginTop: 10 }}>
+  💰 Продать
+</button>
+
       <button onClick={clearCart} style={{ marginTop: 10 }}>
         Очистить чек
       </button>
     </div>
   );
 }
+<h2 style={{ marginTop: 30 }}>📊 Продажи</h2>
+
+<ul>
+  {sales.map(s => (
+    <li key={s.id}>
+      {new Date(s.createdAt).toLocaleString()} — {s.total} грн
+    </li>
+  ))}
+</ul>
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
