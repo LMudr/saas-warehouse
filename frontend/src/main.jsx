@@ -10,13 +10,21 @@ function App() {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
 
+  const [selectedTenant, setSelectedTenant] = useState("");
+  const [tenantName, setTenantName] = useState("");
+
   const [productName, setProductName] = useState("");
   const [productPrice, setProductPrice] = useState("");
 
   // --- LOAD ---
   const loadTenants = async () => {
     const res = await fetch(API + "/admin/tenants");
-    setTenants(await res.json());
+    const data = await res.json();
+    setTenants(data);
+
+    if (data.length > 0 && !selectedTenant) {
+      setSelectedTenant(data[0].id);
+    }
   };
 
   const loadProducts = async () => {
@@ -37,11 +45,15 @@ function App() {
 
   // --- TENANTS ---
   const createTenant = async () => {
+    if (!tenantName) return;
+
     await fetch(API + "/admin/tenants", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: "Мой бизнес" })
+      body: JSON.stringify({ name: tenantName })
     });
+
+    setTenantName("");
     loadTenants();
   };
 
@@ -78,12 +90,13 @@ function App() {
 
   // --- CHECKOUT ---
   const checkout = async () => {
-    if (cart.length === 0) return;
+    if (cart.length === 0 || !selectedTenant) return;
 
     await fetch(API + "/sales", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        tenantId: selectedTenant,
         items: cart,
         total: total
       })
@@ -93,33 +106,44 @@ function App() {
     loadSales();
   };
 
+  // --- FILTER SALES ---
+  const filteredSales = sales.filter(
+    s => s.tenantId === selectedTenant
+  );
+
   // --- UI ---
   return (
     <div style={{ padding: 20, fontFamily: "Arial", maxWidth: 800 }}>
       <h1>SaaS Склад 🚀</h1>
 
-      {/* Компании */}
-      <button
-        onClick={createTenant}
-        style={{
-          padding: 10,
-          background: "green",
-          color: "white",
-          borderRadius: 6,
-          marginTop: 10
-        }}
+      {/* ВЫБОР КОМПАНИИ */}
+      <h2>Текущая компания</h2>
+
+      <select
+        value={selectedTenant}
+        onChange={e => setSelectedTenant(e.target.value)}
       >
-        Создать компанию
-      </button>
-
-      <h2 style={{ marginTop: 30 }}>Компании</h2>
-      <ul>
         {tenants.map(t => (
-          <li key={t.id}>{t.name}</li>
+          <option key={t.id} value={t.id}>
+            {t.name}
+          </option>
         ))}
-      </ul>
+      </select>
 
-      {/* Товары */}
+      {/* СОЗДАНИЕ КОМПАНИИ */}
+      <div style={{ marginTop: 10 }}>
+        <input
+          placeholder="Новая компания"
+          value={tenantName}
+          onChange={e => setTenantName(e.target.value)}
+        />
+
+        <button onClick={createTenant} style={{ marginLeft: 10 }}>
+          Создать
+        </button>
+      </div>
+
+      {/* ТОВАРЫ */}
       <h2 style={{ marginTop: 30 }}>Товары</h2>
 
       <div style={{ marginBottom: 10 }}>
@@ -155,7 +179,7 @@ function App() {
         ))}
       </ul>
 
-      {/* Чек */}
+      {/* ЧЕК */}
       <h2 style={{ marginTop: 30 }}>🧾 Чек</h2>
 
       {cart.length === 0 && <p>Чек пуст</p>}
@@ -184,13 +208,13 @@ function App() {
         Очистить чек
       </button>
 
-      {/* Продажи */}
+      {/* ПРОДАЖИ */}
       <h2 style={{ marginTop: 30 }}>📊 Продажи</h2>
 
-      {sales.length === 0 && <p>Нет продаж</p>}
+      {filteredSales.length === 0 && <p>Нет продаж</p>}
 
       <ul>
-        {sales.map(s => (
+        {filteredSales.map(s => (
           <li key={s.id}>
             {new Date(s.createdAt).toLocaleString()} — {s.total} грн
           </li>
