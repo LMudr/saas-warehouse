@@ -19,38 +19,21 @@ function App() {
     setTenants(await res.json());
   };
 
-  const loadSales = async () => {
-  const res = await fetch(API + "/sales");
-  const data = await res.json();
-  setSales(data);
-};
-
   const loadProducts = async () => {
     const res = await fetch(API + "/products");
     setProducts(await res.json());
   };
 
-  const checkout = async () => {
-  if (cart.length === 0) return;
-
-  await fetch(API + "/sales", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      items: cart,
-      total: total
-    })
-  });
-
-  clearCart();
-  loadSales();
-};
+  const loadSales = async () => {
+    const res = await fetch(API + "/sales");
+    setSales(await res.json());
+  };
 
   useEffect(() => {
-  loadTenants();
-  loadProducts();
-  loadSales();
-}, []);
+    loadTenants();
+    loadProducts();
+    loadSales();
+  }, []);
 
   // --- TENANTS ---
   const createTenant = async () => {
@@ -92,6 +75,23 @@ function App() {
   const clearCart = () => setCart([]);
 
   const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+  // --- CHECKOUT ---
+  const checkout = async () => {
+    if (cart.length === 0) return;
+
+    await fetch(API + "/sales", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        items: cart,
+        total: total
+      })
+    });
+
+    clearCart();
+    loadSales();
+  };
 
   // --- UI ---
   return (
@@ -177,25 +177,27 @@ function App() {
       <h3>Итого: {total} грн</h3>
 
       <button onClick={checkout} style={{ marginTop: 10 }}>
-  💰 Продать
-</button>
+        💰 Продать
+      </button>
 
-      <button onClick={clearCart} style={{ marginTop: 10 }}>
+      <button onClick={clearCart} style={{ marginTop: 10, marginLeft: 10 }}>
         Очистить чек
       </button>
+
+      {/* Продажи */}
+      <h2 style={{ marginTop: 30 }}>📊 Продажи</h2>
+
+      {sales.length === 0 && <p>Нет продаж</p>}
+
+      <ul>
+        {sales.map(s => (
+          <li key={s.id}>
+            {new Date(s.createdAt).toLocaleString()} — {s.total} грн
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
-<h2 style={{ marginTop: 30 }}>📊 Продажи</h2>
-
-<ul>
-  {sales.map((s) => {
-    return (
-      <li key={s.id}>
-        {new Date(s.createdAt).toLocaleString()} — {s.total} грн
-      </li>
-    );
-  })}
-</ul>
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
