@@ -6,6 +6,8 @@ const API = "https://saas-backend-fr9j.onrender.com";
 function App() {
   const [tenants, setTenants] = useState([]);
   const [products, setProducts] = useState([]);
+  const [productName, setProductName] = useState("");
+  const [productPrice, setProductPrice] = useState("");
 
   const loadTenants = async () => {
     const res = await fetch(API + "/admin/tenants");
@@ -30,6 +32,22 @@ function App() {
   };
 
   const createProduct = async () => {
+  if (!productName || !productPrice) return;
+
+  await fetch(API + "/products", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: productName,
+      price: Number(productPrice)
+    })
+  });
+
+  setProductName("");
+  setProductPrice("");
+
+  loadProducts();
+};
     await fetch(API + "/products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -72,9 +90,24 @@ function App() {
 
       <h2 style={{ marginTop: 30 }}>Товары:</h2>
 
-      <button onClick={createProduct}>
-        Добавить товар
-      </button>
+      <div style={{ marginBottom: 10 }}>
+  <input
+    placeholder="Название"
+    value={productName}
+    onChange={e => setProductName(e.target.value)}
+  />
+
+  <input
+    placeholder="Цена"
+    value={productPrice}
+    onChange={e => setProductPrice(e.target.value)}
+    style={{ marginLeft: 10 }}
+  />
+
+  <button onClick={createProduct} style={{ marginLeft: 10 }}>
+    Добавить
+  </button>
+</div>
 
       <ul>
         {products.map(p => (
