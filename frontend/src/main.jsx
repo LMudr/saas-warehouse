@@ -6,6 +6,7 @@ const API = "https://saas-backend-fr9j.onrender.com";
 function App() {
   const [tenants, setTenants] = useState([]);
   const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState([]);
 
   const [productName, setProductName] = useState("");
   const [productPrice, setProductPrice] = useState("");
@@ -22,6 +23,12 @@ function App() {
     setProducts(data);
   };
 
+  const addToCart = (product) => {
+  setCart(prev => [...prev, product]);
+};
+
+const total = cart.reduce((sum, item) => sum + item.price, 0);
+  
   const createTenant = async () => {
     await fetch(API + "/admin/tenants", {
       method: "POST",
